@@ -9,10 +9,13 @@ import abilities from "./api/aiResponse/abilities";
 const launchPhrase = "Computer";
 
 export default function Home() {
-  const spokenText = useSpokenText();
+  const { spokenText, setSpokenText } = useSpokenText();
+  const [manualSpokenText, setManualSpokenText] = useState("");
+
   const [response, setResponse] = useState("");
   const [askingAI, setAskingAI] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     console.log("spokenText", spokenText);
     if (
@@ -56,7 +59,20 @@ export default function Home() {
 
   return (
     <>
-      <div>{spokenText}</div>
+      <div className="z-30 fixed">
+        <input
+          type="text"
+          value={manualSpokenText}
+          ref={inputRef}
+          onChange={(e) => setManualSpokenText(e.target.value)}
+        />
+        <button
+          className="bg-blue-500 text-white p-2 rounded-md"
+          onClick={() => setSpokenText(manualSpokenText)}
+        >
+          Speak
+        </button>
+      </div>
       <div
         className={`absolute top-0 left-0 w-full h-full z-10 flex items-end justify-center`}
         style={{

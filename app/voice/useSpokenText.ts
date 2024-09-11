@@ -118,5 +118,5 @@ export default function useSpokenText() {
     }
   }
 
-  return spokenText;
+  return { spokenText, setSpokenText };
 }
