@@ -7,9 +7,12 @@ const takePictureAbility = {
   whenToUse: "When the user has requested that you take a picture.",
   handler: async () => {
     const image = await takePicture();
-    const imageEl = new Image();
-    imageEl.src = image;
-    document.body.appendChild(imageEl);
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = "captured_image.jpg";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   },
 };
 

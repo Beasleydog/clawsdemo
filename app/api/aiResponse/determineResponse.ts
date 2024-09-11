@@ -26,6 +26,8 @@ function getPrompt() {
   Thinking text is not visible to the user.
   Use the thinking section to determine what to respond and what abilities to use.
   If you're going to use an ability, you must use the token in the thinking section.
+
+  Note that the user is not able to respond to your message. Do not phrase it as if they can.
   `;
 }
 
