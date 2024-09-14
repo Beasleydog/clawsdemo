@@ -1,5 +1,12 @@
 # A heavily simplified Vega clone.
 
+## Demo Video
+Note that its far from perfect, mainly a proof of concept :)
+
+https://github.com/user-attachments/assets/b30c0fa8-1917-4497-a820-b12046ccf343
+
+
+
 ## Abilities:
 
 - Only responds after hearing wakephrase ("Hey Computer...")
