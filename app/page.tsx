@@ -8,7 +8,7 @@ import determineResponse from "./api/aiResponse/determineResponse";
 import abilities from "./api/aiResponse/abilities";
 import { Todo } from "./api/aiResponse/types";
 
-const launchPhrase = "Computer";
+const launchPhrase = "Hey Computer";
 
 export default function Home() {
   const { spokenText, setSpokenText } = useSpokenText();
@@ -26,13 +26,17 @@ export default function Home() {
       setAskingAI(true);
       determineResponse(spokenText, todos).then((responseText) => {
         console.log("AI Response:", responseText);
-
-        const tokenRegex = /<(\w+?)(?::([^>]+))?>/g;
+        // Start of Selection
+        // Start of Selection
+        const tokenRegex = /<([^>]+)>/g;
 
         const processedResponse = responseText.replace(
           tokenRegex,
-          (match, token, param) => {
-            const ability = abilities.find((a) => a.token === token);
+          (match, content) => {
+            const [token, param] = content.split(":");
+            const ability = abilities.find(
+              (a) => a.token.toLowerCase() === token.toLowerCase()
+            );
             if (ability) {
               ability.handler(param, setTodos);
               return "";

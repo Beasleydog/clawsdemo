@@ -29,9 +29,10 @@ ${abilities.map(abilityToText).join("\n")}
 ${todosText}
 
 To use an ability with parameters, include the token followed by a colon and the parameter.
-You MUST use the exact text of the token. Ensure you use the "<" and ">" characters.
-For example, your output should include:
-"<ABILITY_TOKEN:PARAMETERS>"
+Tokens must be formatted like this: <ABILITY_TOKEN:PARAMETERS>
+If there are no parameters, it must be like this: <ABILITY_TOKEN>
+Note that you MUST use the < and > characters.
+Awful terrible things will happen if you do not use the < and > characters.
 
 Your output must be formatted like this:
 "<thinking>
@@ -42,6 +43,10 @@ Response text goes here"
 Thinking text is not visible to the user.
 Use the thinking section to determine what to respond and what abilities to use.
 If you're going to use an ability, you must use the token with appropriate parameters in the thinking section.
+ALL ABILITIES MUST BE USED IN THE THINKING SECTION. 
+DO NOT DISPLAY THE RESULT OF AN ABILITY (EX: UPDATED STATE OF TODO LIST) JUST USE THE TOKEN.
+
+THE RESPONSE MUST ONLY BE THE DIRECT TEXT TO THE USER. DO NOT INCLUDE ANY TOKENS IN THE RESPONSE.
 
 Note that the user is not able to respond to your message. Do not phrase it as if they can.
 `;
