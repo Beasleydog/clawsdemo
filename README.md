@@ -3,8 +3,7 @@
 ## Demo Video
 Note that its far from perfect, mainly a proof of concept :)
 
-https://github.com/user-attachments/assets/b30c0fa8-1917-4497-a820-b12046ccf343
-
+https://drive.google.com/file/d/1kgmrHM6PUAV_y5KIn9hWwr2nyswX4YXk/view?usp=sharing
 
 
 ## Abilities:
