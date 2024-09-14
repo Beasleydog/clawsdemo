@@ -96,7 +96,7 @@ export default function Home() {
           {response}
         </div>
         {/* Input Box and Send Button */}
-        <div className="flex mb-4">
+        <div className="flex mb-4 hidden">
           <input
             type="text"
             value={manualText}
