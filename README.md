@@ -5,6 +5,7 @@
 - Only responds after hearing wakephrase ("Hey Computer...")
 - Answer questions
 - Take picture
+- Add/Remove Todos
 
 ## STT and Reasoning
 
