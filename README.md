@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# A heavily simplified Vega clone.
 
-## Getting Started
+## Abilities:
 
-First, run the development server:
+- Only responds after hearing wakephrase ("Hey Computer...")
+- Answer questions
+- Take picture
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## STT and Reasoning
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The "distil-whisper-large-v3-en" model powers the SST for the application. The incoming audio stream is sliced using the [Silero-vad](https://github.com/snakers4/silero-vad) model and [web-vad](https://github.com/jptaylor/web-vad) before being sent to Groq for STT. Extracted text is then handled using the "llama-3.1-70b-versatile" model on Groq. The model is informed of its abilities (take picture, etc) and instructed to use specific tokens (ex: `<TAKE_PICTURE>`) if the action is requested by the user.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Haar Cascade Classifier
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+A haar cascade classifier was trained to implement hand recogitnion in the dataset.
+[Hagrid dataset](https://github.com/hukenovs/hagrid) was used for positive hand pictures.
+["Random Images for Image classification" dataset](https://www.kaggle.com/datasets/ezzzio/random-images) was used for negative images.
 
-## Learn More
+OpenCV was used for the training process. OpenCVJS was used in the initial implementation before getting removed due to model accuracy.
 
-To learn more about Next.js, take a look at the following resources:
+Model Accuracy: bad
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Post mortem:
+After training the model and testing with the live video feed the accuracy was poor. I believe this was due to an insufficient amount of negative images. The ratio of positive to negative was 4:1; I believe this led to the model having a poor understanding of what is _not_ a hand. This could be seen by the model overly classifying random items in the background as a hand during testing.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+If I was to train this model again I would greatly up the amount of negative images and also make them more "relevant" to the camera feed. Many of the images were extremely unlikely to appear in the live camear feed (ex: random nature pictures). A dataset of random people sitting infront of their camera without showing their hands would be a better negative image dataset.
 
-## Deploy on Vercel
+## Running
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Git clone the repo
+2. Add a `GROQ_API_KEY` to .env file. [https://console.groq.com/keys](https://console.groq.com/keys)
+3. `npm install`
+4. `npm run dev`
+5. Talk to the computer with "Hey Computer..."
