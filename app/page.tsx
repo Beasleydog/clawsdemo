@@ -5,20 +5,16 @@ import pipeVideo from "./camera/pipeVideo";
 import useSpokenText from "./voice/useSpokenText";
 import determineResponse from "./api/aiResponse/determineResponse";
 import abilities from "./api/aiResponse/abilities";
-// import useDetectPalm from "./model/utils";
+import { Todo } from "./api/aiResponse/types";
 
 const launchPhrase = "Computer";
 
 export default function Home() {
   const { spokenText, setSpokenText } = useSpokenText();
-  const [manualSpokenText, setManualSpokenText] = useState("");
-  const [palmCords, setPalmCords] = useState({ x: 0, y: 0, w: 0, h: 0 });
-
+  const [todos, setTodos] = useState<Todo[]>([]);
   const [response, setResponse] = useState("");
   const [askingAI, setAskingAI] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-  // const { detectPalm } = useDetectPalm();
 
   useEffect(() => {
     console.log("spokenText", spokenText);
@@ -27,30 +23,44 @@ export default function Home() {
       spokenText.toLowerCase().includes(launchPhrase.toLowerCase())
     ) {
       setAskingAI(true);
-      determineResponse(spokenText).then((responseText) => {
-        abilities.forEach((ability) => {
-          if (responseText.includes(ability.token)) {
-            ability.handler();
+      determineResponse(spokenText, todos).then((responseText) => {
+        console.log("AI Response:", responseText);
+
+        // Handle all tokens using the original responseText
+        const tokenRegex = /<(\w+?)(?::([^>]+))?>/g; // Updated regex to match tokens with and without params
+        let match;
+        let processedResponse = responseText;
+
+        while ((match = tokenRegex.exec(responseText)) !== null) {
+          const token = match[1];
+          const param = match[2]; // 'param' can be undefined
+          console.log("Detected Token:", token);
+          console.log("Parameter:", param);
+          const ability = abilities.find((a) => a.token === token);
+          if (ability) {
+            ability.handler(param, setTodos);
+            // Remove the token from the processed response
+            processedResponse = processedResponse.replace(match[0], "");
+            // Reset regex lastIndex to handle dynamic string modification
+            tokenRegex.lastIndex = 0;
+          } else {
+            console.warn(`Unknown ability token: ${token}`);
           }
-        });
-
-        const thinkingStart = responseText.indexOf("<thinking>");
-        const thinkingEnd = responseText.indexOf("</thinking>");
-
-        if (thinkingStart !== -1 && thinkingEnd !== -1) {
-          const cleanedResponse =
-            responseText.slice(0, thinkingStart) +
-            responseText.slice(thinkingEnd + 11);
-          setResponse(cleanedResponse.trim());
-        } else {
-          setResponse(responseText.trim());
         }
+
+        // Remove the thinking section after handling tokens
+        let cleanedText = processedResponse.replace(
+          /<thinking>[\s\S]*?<\/thinking>/g,
+          ""
+        );
+
+        setResponse(cleanedText.trim());
       });
       setTimeout(() => {
         setAskingAI(false);
       }, 1000);
     }
-  }, [spokenText]);
+  }, [spokenText]); // Removed 'todos' from dependency array
 
   useEffect(() => {
     if ((window as any).piping) return;
@@ -89,7 +99,7 @@ export default function Home() {
             }
           });
         } catch (error) {
-          console.error("Error detecting faces:", error);
+          console.error("Error detecting palms:", error);
         }
       }
     };
@@ -123,6 +133,29 @@ export default function Home() {
         autoPlay
         muted
       />
+
+      {/* Todo List UI */}
+      <div className="absolute top-4 right-4 w-1/4 bg-white p-4 rounded shadow-lg">
+        <h2 className="text-xl mb-2">Todo List</h2>
+        <ul>
+          {todos.map((todo) => (
+            <li
+              key={todo.id}
+              className="flex justify-between items-center mb-2"
+            >
+              <span>{todo.task}</span>
+              <button
+                onClick={() =>
+                  setTodos((prev) => prev.filter((t) => t.id !== todo.id))
+                }
+                className="text-red-500"
+              >
+                ×
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
     </>
   );
 }

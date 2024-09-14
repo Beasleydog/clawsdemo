@@ -1,18 +1,17 @@
+import { Ability } from "../types";
 import takePicture from "../../../camera/takePicture";
 
-const takePictureAbility = {
+const takePictureAbility: Ability = {
   name: "Take Picture",
-  token: "<TAKE_PICTURE>",
+  token: "TAKE_PICTURE",
   description: "Take a picture with the camera",
   whenToUse: "When the user has requested that you take a picture.",
-  handler: async () => {
-    const image = await takePicture();
-    const link = document.createElement("a");
-    link.href = image;
-    link.download = "captured_image.jpg";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  handler: (
+    param?: string, // {{ edit_1 }} Make 'param' optional
+    setTodos: React.Dispatch<React.SetStateAction<Todo[]>>
+  ) => {
+    // 'param' is ignored for this ability
+    takePicture();
   },
 };
 
