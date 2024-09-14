@@ -1,3 +1,4 @@
+// Start of Selection
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -11,11 +12,11 @@ const launchPhrase = "Computer";
 
 export default function Home() {
   const { spokenText, setSpokenText } = useSpokenText();
+  const [manualText, setManualText] = useState("");
   const [todos, setTodos] = useState<Todo[]>([]);
   const [response, setResponse] = useState("");
   const [askingAI, setAskingAI] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-
   useEffect(() => {
     console.log("spokenText", spokenText);
     if (
@@ -26,30 +27,23 @@ export default function Home() {
       determineResponse(spokenText, todos).then((responseText) => {
         console.log("AI Response:", responseText);
 
-        // Handle all tokens using the original responseText
-        const tokenRegex = /<(\w+?)(?::([^>]+))?>/g; // Updated regex to match tokens with and without params
-        let match;
-        let processedResponse = responseText;
+        const tokenRegex = /<(\w+?)(?::([^>]+))?>/g;
 
-        while ((match = tokenRegex.exec(responseText)) !== null) {
-          const token = match[1];
-          const param = match[2]; // 'param' can be undefined
-          console.log("Detected Token:", token);
-          console.log("Parameter:", param);
-          const ability = abilities.find((a) => a.token === token);
-          if (ability) {
-            ability.handler(param, setTodos);
-            // Remove the token from the processed response
-            processedResponse = processedResponse.replace(match[0], "");
-            // Reset regex lastIndex to handle dynamic string modification
-            tokenRegex.lastIndex = 0;
-          } else {
-            console.warn(`Unknown ability token: ${token}`);
+        const processedResponse = responseText.replace(
+          tokenRegex,
+          (match, token, param) => {
+            const ability = abilities.find((a) => a.token === token);
+            if (ability) {
+              ability.handler(param, setTodos);
+              return "";
+            } else {
+              console.warn(`Unknown ability token: ${token}`);
+              return match;
+            }
           }
-        }
+        );
 
-        // Remove the thinking section after handling tokens
-        let cleanedText = processedResponse.replace(
+        const cleanedText = processedResponse.replace(
           /<thinking>[\s\S]*?<\/thinking>/g,
           ""
         );
@@ -60,7 +54,7 @@ export default function Home() {
         setAskingAI(false);
       }, 1000);
     }
-  }, [spokenText]); // Removed 'todos' from dependency array
+  }, [spokenText]);
 
   useEffect(() => {
     if ((window as any).piping) return;
@@ -74,43 +68,17 @@ export default function Home() {
     };
   }, [videoRef]);
 
-  useEffect(() => {
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-
-    const detect = async () => {
-      if (!(window as any).cv) return;
-      if (videoRef.current && ctx) {
-        canvas.width = videoRef.current.videoWidth;
-        canvas.height = videoRef.current.videoHeight;
-        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        console.log("imageData", imageData);
-        try {
-          const palms = await detectPalm(imageData, (palms) => {
-            console.log("palms", palms);
-            if (palms.length > 0) {
-              setPalmCords({
-                x: palms[0].x,
-                y: palms[0].y,
-                w: palms[0].width,
-                h: palms[0].height,
-              });
-            }
-          });
-        } catch (error) {
-          console.error("Error detecting palms:", error);
-        }
-      }
-    };
-
-    // setInterval(detect, 1000);
-  }, []);
+  const handleSend = () => {
+    if (manualText.trim() !== "") {
+      setSpokenText(manualText);
+      setManualText("");
+    }
+  };
 
   return (
     <>
       <div
-        className={`absolute top-0 left-0 w-full h-full z-10 flex items-end justify-center`}
+        className={`absolute top-0 left-0 w-full h-full z-10 flex flex-col items-center justify-end`}
         style={{
           transition: "box-shadow 0.5s ease-in-out",
           boxShadow: `#40a4f4 0 0 ${askingAI ? "40px" : "0px"} inset`,
@@ -122,6 +90,22 @@ export default function Home() {
           }`}
         >
           {response}
+        </div>
+        {/* Input Box and Send Button */}
+        <div className="flex mb-4">
+          <input
+            type="text"
+            value={manualText}
+            onChange={(e) => setManualText(e.target.value)}
+            placeholder="Type your command..."
+            className="px-2 py-1 border border-gray-300 rounded-l"
+          />
+          <button
+            onClick={handleSend}
+            className="px-4 py-1 bg-blue-500 text-white rounded-r"
+          >
+            Send
+          </button>
         </div>
       </div>
       <video

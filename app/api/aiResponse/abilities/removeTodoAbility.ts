@@ -2,7 +2,7 @@ import { Ability } from "../types";
 
 const removeTodoAbility: Ability = {
   name: "Remove Todo",
-  token: "REMOVE_TODO",
+  token: "<REMOVE_TODO>",
   description: "Remove a todo item by ID",
   whenToUse: "When the user wants to remove a todo.",
   handler: (

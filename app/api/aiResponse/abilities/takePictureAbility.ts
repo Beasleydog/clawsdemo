@@ -3,7 +3,7 @@ import takePicture from "../../../camera/takePicture";
 
 const takePictureAbility: Ability = {
   name: "Take Picture",
-  token: "TAKE_PICTURE",
+  token: "<TAKE_PICTURE>",
   description: "Take a picture with the camera",
   whenToUse: "When the user has requested that you take a picture.",
   handler: (

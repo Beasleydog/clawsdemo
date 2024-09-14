@@ -29,10 +29,9 @@ ${abilities.map(abilityToText).join("\n")}
 ${todosText}
 
 To use an ability with parameters, include the token followed by a colon and the parameter.
-For example:
-- Add a todo: <ADD_TODO:Buy milk>
-- Remove a todo: <REMOVE_TODO:1>
-- Take a picture: <TAKE_PICTURE>
+You MUST use the exact text of the token. Ensure you use the "<" and ">" characters.
+For example, your output should include:
+"<ABILITY_TOKEN:PARAMETERS>"
 
 Your output must be formatted like this:
 "<thinking>
