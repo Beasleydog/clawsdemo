@@ -35,3 +35,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# model images
+model/pos/*.jpg
+model/neg/*.jpg

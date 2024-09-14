@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@techstark/opencv-js": "^4.10.0-release.1",
     "groq-sdk": "^0.7.0",
     "next": "14.2.9",
     "onnxruntime-web": "^1.19.2",

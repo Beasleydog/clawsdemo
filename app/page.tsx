@@ -5,17 +5,21 @@ import pipeVideo from "./camera/pipeVideo";
 import useSpokenText from "./voice/useSpokenText";
 import determineResponse from "./api/aiResponse/determineResponse";
 import abilities from "./api/aiResponse/abilities";
+// import useDetectPalm from "./model/utils";
 
 const launchPhrase = "Computer";
 
 export default function Home() {
   const { spokenText, setSpokenText } = useSpokenText();
   const [manualSpokenText, setManualSpokenText] = useState("");
+  const [palmCords, setPalmCords] = useState({ x: 0, y: 0, w: 0, h: 0 });
 
   const [response, setResponse] = useState("");
   const [askingAI, setAskingAI] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  // const { detectPalm } = useDetectPalm();
+
   useEffect(() => {
     console.log("spokenText", spokenText);
     if (
@@ -49,13 +53,49 @@ export default function Home() {
   }, [spokenText]);
 
   useEffect(() => {
-    if (window.piping) return;
-    window.piping = true;
+    if ((window as any).piping) return;
+    (window as any).piping = true;
     if (videoRef.current) {
       console.log("piping video");
       pipeVideo(videoRef.current);
     }
+    return () => {
+      (window as any).piping = false;
+    };
   }, [videoRef]);
+
+  useEffect(() => {
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const detect = async () => {
+      if (!(window as any).cv) return;
+      if (videoRef.current && ctx) {
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
+        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        console.log("imageData", imageData);
+        try {
+          const palms = await detectPalm(imageData, (palms) => {
+            console.log("palms", palms);
+            if (palms.length > 0) {
+              setPalmCords({
+                x: palms[0].x,
+                y: palms[0].y,
+                w: palms[0].width,
+                h: palms[0].height,
+              });
+            }
+          });
+        } catch (error) {
+          console.error("Error detecting faces:", error);
+        }
+      }
+    };
+
+    // setInterval(detect, 1000);
+  }, []);
 
   return (
     <>
@@ -73,6 +113,18 @@ export default function Home() {
           Speak
         </button>
       </div>
+      <div
+        style={{
+          position: "absolute",
+          top: palmCords.y,
+          left: palmCords.x,
+          width: palmCords.w,
+          height: palmCords.h,
+          border: "2px solid red",
+          zIndex: 1000,
+        }}
+      ></div>
+
       <div
         className={`absolute top-0 left-0 w-full h-full z-10 flex items-end justify-center`}
         style={{
@@ -94,6 +146,8 @@ export default function Home() {
         style={{
           transform: "scaleX(-1)",
         }}
+        autoPlay
+        muted
       />
     </>
   );
