@@ -99,32 +99,6 @@ export default function Home() {
 
   return (
     <>
-      <div className="z-30 fixed">
-        <input
-          type="text"
-          value={manualSpokenText}
-          ref={inputRef}
-          onChange={(e) => setManualSpokenText(e.target.value)}
-        />
-        <button
-          className="bg-blue-500 text-white p-2 rounded-md"
-          onClick={() => setSpokenText(manualSpokenText)}
-        >
-          Speak
-        </button>
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          top: palmCords.y,
-          left: palmCords.x,
-          width: palmCords.w,
-          height: palmCords.h,
-          border: "2px solid red",
-          zIndex: 1000,
-        }}
-      ></div>
-
       <div
         className={`absolute top-0 left-0 w-full h-full z-10 flex items-end justify-center`}
         style={{
