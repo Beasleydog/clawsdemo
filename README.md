@@ -8,7 +8,7 @@
 
 ## STT and Reasoning
 
-The "distil-whisper-large-v3-en" model powers the SST for the application. The incoming audio stream is sliced using the [Silero-vad](https://github.com/snakers4/silero-vad) model and [web-vad](https://github.com/jptaylor/web-vad) before being sent to Groq for STT. Extracted text is then handled using the "llama-3.1-70b-versatile" model on Groq. The model is informed of its abilities (take picture, etc) and instructed to use specific tokens (ex: `<TAKE_PICTURE>`) if the action is requested by the user.
+The "distil-whisper-large-v3-en" model powers the STT for the application. The incoming audio stream is sliced using the [Silero-vad](https://github.com/snakers4/silero-vad) model and [web-vad](https://github.com/jptaylor/web-vad) before being sent to Groq for STT. Extracted text is then handled using the "llama-3.1-70b-versatile" model on Groq. The model is informed of its abilities (take picture, etc) and instructed to use specific tokens (ex: `<TAKE_PICTURE>`) if the action is requested by the user.
 
 ## Haar Cascade Classifier
 
